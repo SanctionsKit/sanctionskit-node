@@ -1,7 +1,7 @@
 {
   "name": "sanctionskit",
-  "version": "0.1.0",
-  "description": "Node.js and TypeScript client for the SanctionsKit screening API",
+  "version": "0.1.1",
+  "description": "Official JavaScript and TypeScript SDK for sanctions screening, watchlist checks, and batch screening with the SanctionsKit API.",
   "license": "MIT",
   "author": "SanctionsKit <support@sanctionskit.com>",
   "homepage": "https://www.sanctionskit.com/docs",
@@ -12,7 +12,24 @@
   "bugs": {
     "url": "https://github.com/SanctionsKit/sanctionskit-node/issues"
   },
-  "keywords": ["sanctionskit", "sanctions", "screening", "compliance", "api", "sdk", "typescript"],
+  "keywords": [
+    "sanctionskit",
+    "sanctions",
+    "sanctions-screening",
+    "screening",
+    "watchlist",
+    "watchlist-screening",
+    "ofac",
+    "ofac-sdn",
+    "sdn",
+    "compliance",
+    "batch-screening",
+    "javascript",
+    "typescript",
+    "nodejs",
+    "api",
+    "sdk"
+  ],
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Expand package metadata for sanctions, OFAC, and watchlist screening searches.
+- Add README guidance for production coverage, API key scopes, and OFAC screening.
+- No runtime changes.
+
 ## 0.1.0
 
 - Initial JavaScript and TypeScript SDK.

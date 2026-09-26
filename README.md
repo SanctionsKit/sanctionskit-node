@@ -60,6 +60,14 @@ For CommonJS:
 const { SanctionsKit } = require('sanctionskit');
 ```
 
+## OFAC and sanctions screening
+
+Use the SDK to screen customers and vendors against selected sanctions and watchlist sources. The [OFAC SDN guide](https://www.sanctionskit.com/datasets/ofac-sdn) explains that list's scope, record details, and review limitations.
+
+For production, [create a production API key](https://www.sanctionskit.com/dashboard/keys?environment=production) with `screenings:write`, or `batches:write` for batch sanctions screening. Add `results:read` to retrieve saved results and `sources:read` to call `sources.list()`. Check the returned availability and supported entity types before selecting a source; a catalog entry alone does not guarantee it can be screened.
+
+When available in your environment, select OFAC SDN with `sources: ['ofac-sdn']`, or choose a versioned `package` that includes your required sources. Supply exactly one coverage selector. `sandbox@1` contains synthetic records and does not screen live sanctions lists. See [source discovery](https://www.sanctionskit.com/docs/sources) and [screening requests](https://www.sanctionskit.com/docs/screenings) for coverage selection and result handling.
+
 ## Retrieve results and evidence
 
 ```js
