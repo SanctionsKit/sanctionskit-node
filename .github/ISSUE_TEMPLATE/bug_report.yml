@@ -1,0 +1,22 @@
+name: Bug report
+description: Report a problem with the SDK.
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: SDK and Node.js versions
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include a small example. Remove API keys and real subject details.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true

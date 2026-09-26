@@ -1,0 +1,40 @@
+{
+  "name": "sanctionskit",
+  "version": "0.1.0",
+  "description": "Node.js and TypeScript client for the SanctionsKit screening API",
+  "license": "MIT",
+  "author": "SanctionsKit <support@sanctionskit.com>",
+  "homepage": "https://www.sanctionskit.com/docs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SanctionsKit/sanctionskit-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SanctionsKit/sanctionskit-node/issues"
+  },
+  "keywords": ["sanctionskit", "sanctions", "screening", "compliance", "api", "sdk", "typescript"],
+  "type": "module",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {"types": "./dist/index.d.ts", "default": "./dist/index.js"},
+      "require": {"types": "./dist/cjs/index.d.ts", "default": "./dist/cjs/index.js"}
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": {"node": ">=22"},
+  "publishConfig": {"access": "public"},
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "npm run build && node --test tests/*.test.mjs && npm run test:types",
+    "test:types": "tsc -p tests/tsconfig.json",
+    "check": "npm run typecheck && npm test",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {"typescript": "~5.9.3"}
+}
