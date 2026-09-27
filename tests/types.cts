@@ -1,4 +1,4 @@
-import { SanctionsKit, SanctionsKitError, type ScreeningRequest } from 'sanctionskit';
+import { SanctionsKit, SanctionsKitError, verifyWebhook, type ScreeningRequest, type MonitorControl, type BatchWaitOptions } from 'sanctionskit';
 
 const client = new SanctionsKit({ apiKey: 'example-key' });
 const request: ScreeningRequest = {
@@ -18,3 +18,10 @@ async function checkCommonJS() {
 }
 
 void checkCommonJS;
+
+const control: MonitorControl = { expectedRevision: 1, status: 'paused' };
+const wait: BatchWaitOptions = { timeoutMs: 1000 };
+const valid: boolean = verifyWebhook('secret', new Headers(), new Uint8Array());
+void client.monitoring.update('monitor-1', control, { idempotencyKey: 'monitor-example-1' });
+void client.batches.waitForCompletion('batch-1', wait);
+void valid;

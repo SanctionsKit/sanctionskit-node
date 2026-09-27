@@ -1,5 +1,22 @@
 import { SanctionsKitError } from './error.js';
 import type {
+  Monitor,
+  MonitorControl,
+  MonitorCreated,
+  MonitorDeleted,
+  MonitorEvent,
+  MonitorEventPage,
+  MonitoringInboxListParams,
+  MonitoringListParams,
+  MonitoringPage,
+  MonitorListParams,
+  MonitorPage,
+  MonitorRequest,
+  MonitorUpdate,
+  MonitorUpdated,
+  ResourceUpdated,
+} from './monitoring-types.js';
+import type {
   APIResponse,
   Batch,
   BatchAccepted,
@@ -14,6 +31,7 @@ import type {
   ResultsPage,
   RetainedScreeningResult,
   ScreeningEvidence,
+  ScreeningPolicySnapshot,
   ScreeningRequest,
   ScreeningResult,
   ScreeningSummary,
@@ -37,10 +55,19 @@ export interface WriteOptions extends RequestOptions {
   idempotencyKey: string;
 }
 
+export interface BatchWaitOptions {
+  timeoutMs?: number;
+  pollIntervalMs?: number;
+  signal?: AbortSignal;
+}
+
 export interface ResultsResource {
   list(params: ResultsListParams & { summary: true }, options?: RequestOptions): Promise<APIResponse<Page<ScreeningSummary>>>;
   list(params?: ResultsListParams & { summary?: false }, options?: RequestOptions): Promise<APIResponse<Page<ScreeningResult>>>;
   list(params: ResultsListParams, options?: RequestOptions): Promise<APIResponse<ResultsPage>>;
+  iterate(params: ResultsListParams & { summary: true }, options?: RequestOptions): AsyncIterableIterator<ScreeningSummary>;
+  iterate(params?: ResultsListParams & { summary?: false }, options?: RequestOptions): AsyncIterableIterator<ScreeningResult>;
+  iterate(params: ResultsListParams, options?: RequestOptions): AsyncIterableIterator<ScreeningResult | ScreeningSummary>;
   retrieve(id: string, options?: RequestOptions): Promise<APIResponse<RetainedScreeningResult>>;
   evidence(id: string, options?: RequestOptions): Promise<ScreeningEvidence>;
 }
@@ -54,9 +81,9 @@ interface RequestData {
 const DEFAULT_BASE_URL = 'https://www.sanctionskit.com/api/v1';
 const DEFAULT_TIMEOUT_MS = 30_000;
 
-function validateTimeout(value: number): number {
+function validateTimeout(value: number, name = 'timeoutMs'): number {
   if (!Number.isInteger(value) || value < 1 || value > 2_147_483_647) {
-    throw new TypeError('timeoutMs must be an integer between 1 and 2147483647.');
+    throw new TypeError(`${name} must be an integer between 1 and 2147483647.`);
   }
   return value;
 }
@@ -77,6 +104,51 @@ function idempotencyKey(options: WriteOptions | undefined): string {
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+async function* iteratePages<T, Params extends PageParams>(
+  list: (params: Params, options: RequestOptions) => Promise<APIResponse<Page<T>>>,
+  params: Params,
+  options: RequestOptions,
+): AsyncIterableIterator<T> {
+  const query = { ...params };
+  const seen = new Set<string>(query.cursor === undefined ? [] : [query.cursor]);
+  while (true) {
+    options.signal?.throwIfAborted();
+    const { data } = await list(query, options);
+    options.signal?.throwIfAborted();
+    if (!isObject(data) || !Array.isArray(data.items)) {
+      throw new Error('SanctionsKit returned an invalid pagination page; expected data.items to be an array.');
+    }
+    const next = data.nextCursor;
+    if (next !== null && (typeof next !== 'string' || !next.trim() || seen.has(next))) {
+      throw new Error('SanctionsKit returned an invalid or repeated pagination cursor.');
+    }
+    for (const item of data.items) {
+      options.signal?.throwIfAborted();
+      yield item;
+    }
+    options.signal?.throwIfAborted();
+    if (next === null) return;
+    seen.add(next);
+    query.cursor = next;
+  }
+}
+
+function sleep(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    signal.throwIfAborted();
+    const abort = () => {
+      clearTimeout(timer);
+      signal.removeEventListener('abort', abort);
+      reject(signal.reason);
+    };
+    const timer = setTimeout(() => {
+      signal.removeEventListener('abort', abort);
+      resolve();
+    }, ms);
+    signal.addEventListener('abort', abort, { once: true });
+  });
 }
 
 export class SanctionsKit {
@@ -113,6 +185,8 @@ export class SanctionsKit {
   readonly policies = {
     list: (params: PageParams = {}, options?: RequestOptions): Promise<APIResponse<PolicyList>> =>
       this.#request('GET', '/policies', options, { query: params }),
+    iterate: (params: PageParams = {}, options: RequestOptions = {}): AsyncIterableIterator<ScreeningPolicySnapshot> =>
+      iteratePages(this.policies.list, { ...params }, { ...options }),
     retrieve: (id: string, options?: RequestOptions): Promise<APIResponse<PolicyList>> =>
       this.#request('GET', `/policies/${resourceId(id)}`, options),
   };
@@ -125,6 +199,8 @@ export class SanctionsKit {
   readonly results: ResultsResource = {
     list: ((params: ResultsListParams = {}, options?: RequestOptions) =>
       this.#request<APIResponse<ResultsPage>>('GET', '/results', options, { query: params })) as ResultsResource['list'],
+    iterate: ((params: ResultsListParams = {}, options: RequestOptions = {}) =>
+      iteratePages<ScreeningResult | ScreeningSummary, ResultsListParams>(this.results.list, { ...params }, { ...options })) as ResultsResource['iterate'],
     retrieve: (id, options) => this.#request('GET', `/results/${resourceId(id)}`, options),
     evidence: (id, options) => this.#request('GET', `/results/${resourceId(id)}/evidence`, options),
   };
@@ -134,16 +210,110 @@ export class SanctionsKit {
       this.#request('POST', '/batches', options, { body, idempotencyKey: idempotencyKey(options) }),
     list: (params: PageParams = {}, options?: RequestOptions): Promise<APIResponse<Page<Batch>>> =>
       this.#request('GET', '/batches', options, { query: params }),
+    iterate: (params: PageParams = {}, options: RequestOptions = {}): AsyncIterableIterator<Batch> =>
+      iteratePages(this.batches.list, { ...params }, { ...options }),
     retrieve: (id: string, params: BatchRetrieveParams = {}, options?: RequestOptions): Promise<APIResponse<BatchDetail>> =>
       this.#request('GET', `/batches/${resourceId(id)}`, options, { query: params }),
+    iterateRows: (id: string, params: BatchRetrieveParams = {}, options: RequestOptions = {}): AsyncIterableIterator<BatchDetail['rows'][number]> =>
+      this.#iterateBatchRows(id, { ...params }, { ...options }),
+    waitForCompletion: (id: string, options: BatchWaitOptions = {}): Promise<APIResponse<BatchDetail>> =>
+      this.#waitForBatch(id, options),
     cancel: (id: string, options?: RequestOptions): Promise<APIResponse<BatchCancellation>> =>
       this.#request('DELETE', `/batches/${resourceId(id)}`, options),
+  };
+
+  readonly monitors = {
+    create: (body: MonitorRequest, options: WriteOptions): Promise<APIResponse<MonitorCreated>> =>
+      this.#request('POST', '/monitors', options, { body, idempotencyKey: idempotencyKey(options) }),
+    list: (params: MonitorListParams = {}, options?: RequestOptions): Promise<APIResponse<MonitorPage>> =>
+      this.#request('GET', '/monitors', options, { query: params }),
+    retrieve: (id: string, options?: RequestOptions): Promise<APIResponse<Monitor>> =>
+      this.#request('GET', `/monitors/${resourceId(id)}`, options),
+    update: (id: string, body: MonitorUpdate, options: WriteOptions): Promise<APIResponse<MonitorUpdated>> =>
+      this.#request('PATCH', `/monitors/${resourceId(id)}`, options, { body, idempotencyKey: idempotencyKey(options) }),
+    delete: (id: string, options?: RequestOptions): Promise<APIResponse<MonitorDeleted>> =>
+      this.#request('DELETE', `/monitors/${resourceId(id)}`, options),
+  };
+
+  readonly monitoring = {
+    list: (params: MonitoringListParams = {}, options?: RequestOptions): Promise<APIResponse<MonitoringPage>> =>
+      this.#request('GET', '/monitoring', options, { query: params }),
+    update: (id: string, body: MonitorControl, options: WriteOptions): Promise<APIResponse<ResourceUpdated>> =>
+      this.#request('PATCH', `/monitoring/${resourceId(id)}`, options, { body, idempotencyKey: idempotencyKey(options) }),
+    inbox: {
+      list: (params: MonitoringInboxListParams = {}, options?: RequestOptions): Promise<APIResponse<MonitorEventPage>> =>
+        this.#request('GET', '/monitoring/inbox', options, { query: params }),
+      retrieve: (id: string, options?: RequestOptions): Promise<APIResponse<MonitorEvent>> =>
+        this.#request('GET', `/monitoring/inbox/${resourceId(id)}`, options),
+    },
   };
 
   readonly usage = {
     retrieve: (options?: RequestOptions): Promise<APIResponse<Usage>> =>
       this.#request('GET', '/usage', options),
   };
+
+  async *#iterateBatchRows(id: string, params: BatchRetrieveParams, options: RequestOptions): AsyncIterableIterator<BatchDetail['rows'][number]> {
+    let offset = params.offset ?? 0;
+    if (!Number.isSafeInteger(offset) || offset < 0) throw new TypeError('offset must be a nonnegative integer.');
+    while (true) {
+      options.signal?.throwIfAborted();
+      const { data } = await this.batches.retrieve(id, { ...params, offset }, options);
+      options.signal?.throwIfAborted();
+      if (!isObject(data) || !Array.isArray(data.rows)) {
+        throw new Error('SanctionsKit returned an invalid batch row page; expected data.rows to be an array.');
+      }
+      const next = data.nextOffset;
+      if (next !== null && (!Number.isSafeInteger(next) || next <= offset)) {
+        throw new Error('SanctionsKit returned an invalid or non-advancing row offset.');
+      }
+      for (const row of data.rows) {
+        options.signal?.throwIfAborted();
+        yield row;
+      }
+      options.signal?.throwIfAborted();
+      if (next === null) return;
+      offset = next;
+    }
+  }
+
+  async #waitForBatch(id: string, options: BatchWaitOptions): Promise<APIResponse<BatchDetail>> {
+    resourceId(id);
+    const timeoutMs = validateTimeout(options.timeoutMs ?? 300_000);
+    const pollIntervalMs = validateTimeout(options.pollIntervalMs ?? 5_000, 'pollIntervalMs');
+    const controller = new AbortController();
+    const signal = options.signal ? AbortSignal.any([options.signal, controller.signal]) : controller.signal;
+    const timeoutError = new DOMException('Timed out waiting for batch completion.', 'TimeoutError');
+    const deadline = performance.now() + timeoutMs;
+    const checkDeadline = () => {
+      if (performance.now() >= deadline) controller.abort(timeoutError);
+      signal.throwIfAborted();
+    };
+    signal.throwIfAborted();
+    const timer = setTimeout(() => controller.abort(timeoutError), timeoutMs);
+    try {
+      while (true) {
+        checkDeadline();
+        const response = await this.batches.retrieve(id, {}, { signal });
+        checkDeadline();
+        switch (response.data.status) {
+          case 'completed':
+          case 'failed':
+          case 'cancelled':
+            return response;
+          case 'importing':
+          case 'pending':
+          case 'processing':
+            await sleep(pollIntervalMs, signal);
+            break;
+          default:
+            throw new Error('SanctionsKit returned an unknown batch status.');
+        }
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  }
 
   async #request<T>(method: string, path: string, options: RequestOptions = {}, data: RequestData = {}): Promise<T> {
     const timeoutMs = validateTimeout(options.timeoutMs ?? this.#timeoutMs);

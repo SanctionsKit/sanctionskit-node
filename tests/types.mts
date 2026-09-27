@@ -5,6 +5,12 @@ import SanctionsKit, {
   type ScreeningRequest,
   type ScreeningResult,
   type ScreeningSummary,
+  verifyWebhook,
+  type BatchWaitOptions,
+  type MonitorRequest,
+  type MonitorUpdate,
+  type MonitorControl,
+  type VerifyWebhookOptions,
 } from 'sanctionskit';
 
 const client: NamedSanctionsKit = new SanctionsKit({ apiKey: 'example-key' });
@@ -80,3 +86,65 @@ void bothCoverage;
 void missingCoverage;
 void bothBatchInputs;
 void minimalBatch;
+
+async function checkNewResources() {
+  for await (const result of client.results.iterate({ summary: true }, options)) {
+    const summary: ScreeningSummary = result;
+    void summary;
+  }
+  for await (const result of client.results.iterate({}, options)) {
+    const full: ScreeningResult = result;
+    void full;
+  }
+  for await (const policy of client.policies.iterate()) void policy.version;
+  for await (const batch of client.batches.iterate()) void batch.completed;
+  for await (const row of client.batches.iterateRows('batch-1', {}, options)) void row.screening_id;
+  const wait: BatchWaitOptions = { signal, timeoutMs: 10_000, pollIntervalMs: 100 };
+  const batch = await client.batches.waitForCompletion('batch-1', wait);
+  const monitor: MonitorRequest = { name: 'Example', subject: screening.subject, package: 'sandbox@1' };
+  const write = { idempotencyKey: 'monitor-example-1', ...options };
+  const created = await client.monitors.create(monitor, write);
+  const compact = await client.monitors.retrieve(created.data.id, options);
+  const last: string | null = compact.data.last_screening_id;
+  const monitors = await client.monitors.list({}, options);
+  await client.monitors.update(created.data.id, { ...monitor, expectedRevision: 1 }, write);
+  const control: MonitorControl = { expectedRevision: 2, status: 'paused' };
+  await client.monitoring.update(created.data.id, control, write);
+  const health = await client.monitoring.list({ monitorId: created.data.id }, options);
+  const inbox = await client.monitoring.inbox.list({ status: 'unread', kind: 'match_added' }, options);
+  const event = await client.monitoring.inbox.retrieve('event-1', options);
+  const stopped = await client.monitors.delete(created.data.id, options);
+  const verifyOptions: VerifyWebhookOptions = { now: 1_800_000_000, toleranceSeconds: 300 };
+  const verified: boolean = verifyWebhook('example-secret', new Headers(), new Uint8Array(), verifyOptions);
+  return { batch, last, monitors, health, inbox, event, stopped, verified };
+}
+
+// @ts-expect-error A monitor requires one coverage selector.
+const noMonitorCoverage: MonitorRequest = { name: 'Example', subject: { name: 'Example' } };
+// @ts-expect-error A monitor cannot combine coverage selectors.
+const bothMonitorCoverage: MonitorRequest = { name: 'Example', subject: { name: 'Example' }, sources: ['ofac-sdn'], package: 'sandbox@1' };
+// @ts-expect-error Monitor creation has fixed retention.
+const monitorRetention: MonitorRequest = { name: 'Example', subject: { name: 'Example' }, package: 'sandbox@1', retention: 'minimal' };
+// @ts-expect-error Replacement requires a full definition.
+const partialMonitor: MonitorUpdate = { expectedRevision: 1, name: 'Example' };
+// @ts-expect-error Control requires an action.
+const noMonitorAction: MonitorControl = { expectedRevision: 1 };
+// @ts-expect-error A current revision is required.
+const noMonitorRevision: MonitorControl = { status: 'paused' };
+// @ts-expect-error Queuing a run uses true.
+const noMonitorRun: MonitorControl = { expectedRevision: 1, runNow: false };
+// @ts-expect-error Cadence must be supported by the API.
+const invalidMonitorInterval: MonitorControl = { expectedRevision: 1, intervalHours: 12 };
+// @ts-expect-error Monitor creation requires an operation key.
+client.monitors.create({ name: 'Example', subject: { name: 'Example' }, package: 'sandbox@1' });
+// @ts-expect-error Verification takes raw bytes.
+verifyWebhook('secret', new Headers(), '{}');
+void checkNewResources;
+void noMonitorCoverage;
+void bothMonitorCoverage;
+void monitorRetention;
+void partialMonitor;
+void noMonitorAction;
+void noMonitorRevision;
+void noMonitorRun;
+void invalidMonitorInterval;

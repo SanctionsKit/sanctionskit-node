@@ -1,7 +1,7 @@
 {
   "name": "sanctionskit",
-  "version": "0.1.1",
-  "description": "Official JavaScript and TypeScript SDK for sanctions screening, watchlist checks, and batch screening with the SanctionsKit API.",
+  "version": "0.2.0",
+  "description": "Official JavaScript and TypeScript SDK for sanctions screening, watchlist checks, batch screening, and ongoing monitoring with the SanctionsKit API.",
   "license": "MIT",
   "author": "SanctionsKit <support@sanctionskit.com>",
   "homepage": "https://www.sanctionskit.com/docs",
@@ -28,7 +28,13 @@
     "typescript",
     "nodejs",
     "api",
-    "sdk"
+    "sdk",
+    "uk-sanctions",
+    "consolidated-screening-list",
+    "bis",
+    "denied-persons-list",
+    "sanctions-api",
+    "restricted-party-screening"
   ],
   "type": "module",
   "main": "./dist/cjs/index.js",
@@ -36,15 +42,29 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": {"types": "./dist/index.d.ts", "default": "./dist/index.js"},
-      "require": {"types": "./dist/cjs/index.d.ts", "default": "./dist/cjs/index.js"}
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
-  "engines": {"node": ">=22"},
-  "publishConfig": {"access": "public"},
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
@@ -53,5 +73,8 @@
     "check": "npm run typecheck && npm test",
     "prepack": "npm run build"
   },
-  "devDependencies": {"typescript": "~5.9.3"}
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "typescript": "~5.9.3"
+  }
 }
