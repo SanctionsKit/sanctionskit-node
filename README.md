@@ -2,7 +2,7 @@
 
 The official Node.js SDK for the [SanctionsKit API](https://www.sanctionskit.com/). Screen people and organizations against selected sanctions and watchlist sources, retrieve saved evidence, submit batches, and manage ongoing monitoring.
 
-[Documentation](https://www.sanctionskit.com/docs) · [API reference](https://www.sanctionskit.com/docs/api-reference) · [Create an account](https://www.sanctionskit.com/signup) · [Get an API key](https://www.sanctionskit.com/dashboard/keys?environment=sandbox)
+[Node.js and TypeScript guide](https://www.sanctionskit.com/integrations/typescript) · [API reference](https://www.sanctionskit.com/docs/api-reference) · [Create an account](https://www.sanctionskit.com/signup) · [Get an API key](https://www.sanctionskit.com/dashboard/keys?environment=sandbox)
 
 ## Install
 
@@ -13,6 +13,8 @@ npm install sanctionskit
 Requires Node.js 22 or later. Includes TypeScript types, ESM and CommonJS exports, and no runtime dependencies. Use it on your server; API keys must stay out of browser bundles.
 
 ## Your first screening
+
+The synthetic sandbox is free and needs no card. Production screening requires a [paid plan](https://www.sanctionskit.com/pricing).
 
 1. [Create a workspace](https://www.sanctionskit.com/signup) and open [API keys](https://www.sanctionskit.com/dashboard/keys?environment=sandbox).
 2. Create a **sandbox** key with `screenings:write` and `results:read` scopes.
