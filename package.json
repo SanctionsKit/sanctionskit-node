@@ -1,6 +1,6 @@
 {
   "name": "sanctionskit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Official JavaScript and TypeScript SDK for sanctions screening, watchlist checks, batch screening, and ongoing monitoring with the SanctionsKit API.",
   "license": "MIT",
   "author": "SanctionsKit <support@sanctionskit.com>",
@@ -56,6 +56,7 @@
   "files": [
     "dist",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "sideEffects": false,

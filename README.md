@@ -12,6 +12,8 @@ npm install sanctionskit
 
 Requires Node.js 22 or later. Includes TypeScript types, ESM and CommonJS exports, and no runtime dependencies. Use it on your server; API keys must stay out of browser bundles.
 
+See the [changelog](https://github.com/SanctionsKit/sanctionskit-node/blob/main/CHANGELOG.md) for release history. It is also included in the installed package.
+
 ## Your first screening
 
 The synthetic sandbox is free and needs no card. Production screening requires a [paid plan](https://www.sanctionskit.com/pricing).

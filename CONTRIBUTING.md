@@ -16,7 +16,7 @@ For bug reports, include the SDK version, Node.js version, and a small reproduct
 ## Releases
 
 1. Update the version and changelog, then run `npm run check`.
-2. Run `npm pack --dry-run` and inspect the file list. The package should contain the compiled SDK, README, license, and package metadata.
+2. Run `npm pack --dry-run` and inspect the file list. The package should contain the compiled SDK, README, changelog, license, and package metadata.
 3. Commit and push the release with GitKraken. Confirm the author and committer use the SanctionsKit identity before pushing.
 4. Check that GitHub Actions passed for the release commit.
 5. Run `npm whoami` and confirm the account is `sanctionskit`.

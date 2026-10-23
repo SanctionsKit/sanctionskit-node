@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- Include the changelog in the npm package and link it from the README.
+- No runtime changes.
+
 ## 0.2.0
 
 - Add lazy iterators for results, policies, batches, and batch rows.
