@@ -1,6 +1,6 @@
-# SanctionsKit for JavaScript and TypeScript
+# SanctionsKit: OFAC and sanctions screening for Node.js and TypeScript
 
-The official Node.js SDK for the [SanctionsKit API](https://www.sanctionskit.com/). Screen people and organizations against selected sanctions and watchlist sources, retrieve saved evidence, submit batches, and manage ongoing monitoring.
+The official JavaScript and TypeScript SDK for the [SanctionsKit API](https://www.sanctionskit.com/). Add sanctions checks, watchlist screening, batch screening, and ongoing monitoring to your Node.js application. Select available sources such as OFAC SDN, retrieve screening evidence, and verify incoming webhooks.
 
 [Node.js and TypeScript guide](https://www.sanctionskit.com/integrations/typescript) · [API reference](https://www.sanctionskit.com/docs/api-reference) · [Create an account](https://www.sanctionskit.com/signup) · [Get an API key](https://www.sanctionskit.com/dashboard/keys?environment=sandbox)
 
@@ -64,7 +64,22 @@ For CommonJS:
 const { SanctionsKit } = require('sanctionskit');
 ```
 
-## OFAC and sanctions screening
+## What you can build
+
+| Workflow | SDK starting point |
+| --- | --- |
+| Individual and customer screening | Check a person's name and identifying details with `screenings.create()`. |
+| Company, vendor, and supplier screening | Screen an organization or business counterparty using `entityType: 'organization'`. |
+| Vessel and aircraft screening | Submit `entityType: 'vessel'` or `'aircraft'` with sources that support that subject type. |
+| Restricted-party and denied-party screening | Discover available lists with `sources.list()` and select the sources relevant to your request. |
+| Bulk sanctions checks | Submit customers or counterparties with `batches.create()`, wait for completion, and read every row. |
+| Ongoing sanctions monitoring | Retain a subject with `monitors.create()` and read health and events through `monitoring`. |
+| Screening audit trails | Retrieve saved results, selected coverage, source versions, and evidence for your review records. |
+| Webhook integration | Verify delivery signatures with `verifyWebhook()` before accepting events into your application. |
+
+Use these checks as the screening step in anti-money laundering (AML), know your customer (KYC), or know your business (KYB) workflows. Your application remains responsible for identity verification, review decisions, and the rest of its due-diligence process. See [KYC, AML, and sanctions screening](https://www.sanctionskit.com/guides/kyc-vs-aml-vs-sanctions-screening) and [customer screening](https://www.sanctionskit.com/guides/customer-screening) for workflow guidance.
+
+## OFAC, sanctions lists, and restricted-party screening
 
 Use the SDK to screen customers and vendors against selected sanctions and watchlist sources. The [OFAC SDN guide](https://www.sanctionskit.com/datasets/ofac-sdn) explains that list's scope, record details, and review limitations.
 
@@ -72,16 +87,22 @@ For production, [create a production API key](https://www.sanctionskit.com/dashb
 
 When available in your environment, select OFAC SDN with `sources: ['ofac-sdn']`, or choose a versioned `package` that includes your required sources. Supply exactly one coverage selector. `sandbox@1` contains synthetic records and does not screen live sanctions lists. See [source discovery](https://www.sanctionskit.com/docs/sources) and [screening requests](https://www.sanctionskit.com/docs/screenings) for coverage selection and result handling.
 
-The [list screening example](https://github.com/SanctionsKit/sanctionskit-node/blob/main/examples/screen-list.mjs) checks availability and person-screening support before making a request. It works with an explicit source ID:
+The [list screening example](https://github.com/SanctionsKit/sanctionskit-node/blob/main/examples/screen-list.mjs) checks availability and person-screening support before making a request. Use these source IDs for discovery; the table is not a guarantee of enabled coverage:
 
 | List | Source ID | Guide |
 | --- | --- | --- |
-| OFAC SDN | `ofac-sdn` | [OFAC designations](https://www.sanctionskit.com/datasets/ofac-sdn) |
-| UK Sanctions List | `uk-sanctions` | [FCDO UK sanctions](https://www.sanctionskit.com/datasets/uk-sanctions) |
-| U.S. Consolidated Screening List | `us-csl` | [CSL scope and restrictions](https://www.sanctionskit.com/datasets/us-csl) |
-| BIS Denied Persons List | `us-bis-denied` | [Denial orders and dates](https://www.sanctionskit.com/datasets/us-bis-denied) |
+| OFAC Specially Designated Nationals and Blocked Persons List (SDN) | `ofac-sdn` | [Office of Foreign Assets Control designations](https://www.sanctionskit.com/datasets/ofac-sdn) |
+| OFAC Non-SDN Consolidated Sanctions List | `ofac-non-sdn` | [Program-specific restrictions](https://www.sanctionskit.com/datasets/ofac-non-sdn) |
+| UK Sanctions List (FCDO) | `uk-sanctions` | [Foreign, Commonwealth & Development Office sanctions](https://www.sanctionskit.com/datasets/uk-sanctions) |
+| Bureau of Industry and Security Denied Persons List (BIS DPL) | `us-bis-denied` | [Export denial orders and dates](https://www.sanctionskit.com/datasets/us-bis-denied) |
+| Canadian Consolidated Autonomous Sanctions List | `ca-autonomous` | [Global Affairs Canada sanctions](https://www.sanctionskit.com/datasets/ca-autonomous) |
+| Swiss SECO sanctions and embargoes | `ch-seco` | [State Secretariat for Economic Affairs measures](https://www.sanctionskit.com/datasets/ch-seco) |
+| Japan Ministry of Finance sanctions | `jp-mof-sanctions` | [Asset-freezing and related measures](https://www.sanctionskit.com/datasets/jp-mof-sanctions) |
+| U.S. Consolidated Screening List (CSL) | `us-csl` | [Commerce, State, and Treasury source scope and activation requirements](https://www.sanctionskit.com/datasets/us-csl) |
 
 These lists have different meanings. Review the relevant designation or order when interpreting a match. The API remains authoritative about the coverage currently usable by your key.
+
+Browse the [source directory](https://www.sanctionskit.com/datasets) for other lists and their availability. A source guide describes the source; only a successful availability check establishes whether your API request can use it.
 
 ## Retrieve results and evidence
 
@@ -134,7 +155,7 @@ for await (const result of client.results.iterate({ summary: true, limit: 100 })
 
 `results.iterate()`, `policies.iterate()`, and `batches.iterate()` accept the same filters and request options as their list methods. `batches.iterateRows(id, params?, options?)` yields individual batch rows. They fetch one page at a time and request the next only as the loop needs it. A `break` stops further requests. A supplied `signal` cancels iteration; `timeoutMs` applies to each request. Errors reject the loop without retrying.
 
-## Wait for a batch
+## Bulk screening: wait for a batch
 
 ```js
 const { data: batch } = await client.batches.waitForCompletion('your-batch-id', {
@@ -152,7 +173,7 @@ The helper polls an existing batch until it is `completed`, `failed`, or `cancel
 
 A completed batch can contain failed rows. Inspect each row and handle its error before treating the portfolio as processed. The helper returns the batch detail response with one row page; use `iterateRows()` for all rows. See the [batch guide](https://www.sanctionskit.com/docs/batches) and [complete example](https://github.com/SanctionsKit/sanctionskit-node/blob/main/examples/wait-for-batch.mjs).
 
-## Ongoing monitoring
+## Ongoing sanctions monitoring
 
 ```js
 const { data: monitor } = await client.monitors.create(
@@ -175,7 +196,7 @@ To pause, read the current revision and call `monitoring.update(id, { expectedRe
 
 `monitors` preserves the compact API's snake_case fields. `monitoring` returns richer camelCase health records and an event inbox. API keys can read inbox events; human review acknowledgement stays in the dashboard. See [monitoring](https://www.sanctionskit.com/docs/monitoring) for retention, cadence, and event handling.
 
-## Verify webhooks
+## Verify webhook signatures
 
 ```js
 import { verifyWebhook } from 'sanctionskit';
@@ -232,6 +253,24 @@ const result = await client.results.retrieve('your-screening-id', {
 Requests default to a 30-second timeout. You can supply `fetch` for testing and `baseURL` for a trusted API deployment. The default is `https://www.sanctionskit.com/api/v1`.
 
 Your API key determines the environment. For production, create a production key, replace `sandbox@1` with an available production package, or use `sources` instead of `package`. Supply exactly one coverage selector. Workspaces that require approved policies also need a policy ID and version. Review [authentication](https://www.sanctionskit.com/docs/authentication), [source availability](https://www.sanctionskit.com/docs/sources), [policies](https://www.sanctionskit.com/docs/policies), and [plans](https://www.sanctionskit.com/pricing).
+
+## Common questions
+
+### Is this an OFAC list download or an API client?
+
+This package calls the hosted SanctionsKit API. It does not bundle sanctions records or provide offline list matching. Use [source discovery](https://www.sanctionskit.com/docs/sources) to select available coverage, then submit a sanction check through `screenings.create()`.
+
+### Do I need an API key? Can I try it for free?
+
+Yes, API calls require a [SanctionsKit API key](https://www.sanctionskit.com/dashboard/keys?environment=sandbox). The free, no-card sandbox uses synthetic records so you can test requests and result handling. Production screening uses a production key and a [paid plan](https://www.sanctionskit.com/pricing).
+
+### Can I screen companies as well as people?
+
+Yes. Use `entityType: 'person'` for an individual or `entityType: 'organization'` for a company. The [batch example](https://github.com/SanctionsKit/sanctionskit-node/blob/main/examples/batch.mjs) includes both. Check each selected source's supported entity types before screening.
+
+### Can I use it with Next.js or Express?
+
+Use the SDK in a Node.js 22+ server route, worker, or backend service. For Next.js, choose the Node.js runtime. Keep API keys in server environment variables and out of browser code. The [webhook receiver example](https://github.com/SanctionsKit/sanctionskit-node/blob/main/examples/README.md#receive-webhooks) includes a Next.js route adapter.
 
 ## Examples and development
 

@@ -13,6 +13,10 @@ Check the [API reference](https://www.sanctionskit.com/docs/api-reference) and [
 
 For bug reports, include the SDK version, Node.js version, and a small reproduction. Remove keys, personal data, and real subject details. API integration questions can go to [SanctionsKit support](https://www.sanctionskit.com/contact).
 
+## Search checks
+
+Run `npm run search:check -- /tmp/sanctionskit-search.json` for a manual search snapshot. See [npm search checks](docs/npm-discoverability.md) for the query matrix and comparison guidance. This check uses public npm APIs and is separate from the offline test suite.
+
 ## Releases
 
 1. Update the version and changelog, then run `npm run check`.

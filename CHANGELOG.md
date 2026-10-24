@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2
+
+- Expand search metadata for supported sanctions lists, screening workflows, and SDK features.
+- Add source guides, workflow examples, and setup answers to the README.
+- Link the npm homepage to the Node.js and TypeScript integration guide.
+- Add a manual npm search audit for maintainers.
+- No runtime changes.
+
 ## 0.2.1
 
 - Include the changelog in the npm package and link it from the README.
