@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "queryMatrixVersion": 1,
+  "package": "sanctionskit",
+  "startedAt": "2026-10-24T01:58:35.603Z",
+  "finishedAt": "2026-10-24T02:00:39.785Z",
+  "method": {
+    "endpoint": "https://registry.npmjs.org/-/v1/search",
+    "ordering": "registry default; no custom sort or scoring parameters",
+    "resultLimit": 250,
+    "concurrency": 3,
+    "requestIntervalMs": 2000,
+    "rankMeaning": "One-based position among returned results; null means not observed in the first 250, not necessarily absent from the index."
+  },
+  "latest": {
+    "version": "0.2.3",
+    "description": "Official Node.js and TypeScript SDK for OFAC and sanctions screening, watchlist screening, restricted-party screening, batch screening, ongoing monitoring, and webhooks in AML, KYC and KYB workflows.",
+    "keywords": [
+      "sanctionskit",
+      "sanctions",
+      "sanctions-screening",
+      "screening",
+      "watchlist",
+      "watchlist-screening",
+      "ofac",
+      "ofac-sdn",
+      "sdn",
+      "compliance",
+      "batch-screening",
+      "javascript",
+      "typescript",
+      "nodejs",
+      "api",
+      "sdk",
+      "uk-sanctions",
+      "consolidated-screening-list",
+      "bis",
+      "denied-persons-list",
+      "sanctions-api",
+      "restricted-party-screening",
+      "sanction",
+      "sanction-screening",
+      "sanctions-list",
+      "sanctions-check",
+      "sanctions-compliance",
+      "ofac-screening",
+      "ofac-api",
+      "ofac-non-sdn",
+      "restricted-party",
+      "denied-party-screening",
+      "export-control",
+      "export-compliance",
+      "aml",
+      "aml-screening",
+      "anti-money-laundering",
+      "kyc",
+      "kyb",
+      "customer-due-diligence",
+      "due-diligence",
+      "customer-screening",
+      "vendor-screening",
+      "supplier-screening",
+      "counterparty-screening",
+      "entity-screening",
+      "name-screening",
+      "person-screening",
+      "company-screening",
+      "organization-screening",
+      "vessel-screening",
+      "aircraft-screening",
+      "ongoing-monitoring",
+      "sanctions-monitoring",
+      "bulk-screening",
+      "webhooks",
+      "canada-sanctions",
+      "swiss-sanctions",
+      "seco",
+      "japan-sanctions",
+      "debarment",
+      "exclusion-screening"
+    ]
+  },
+  "indexedVersions": [
+    "0.2.3"
+  ],
+  "downloads": {
+    "lastWeek": {
+      "downloads": 8,
+      "start": "2026-10-16",
+      "end": "2026-10-22",
+      "package": "sanctionskit"
+    },
+    "lastMonth": {
+      "downloads": 869,
+      "start": "2026-09-23",
+      "end": "2026-10-22",
+      "package": "sanctionskit"
+    }
+  },
+  "coverage": {
+    "queries": 60,
+    "measured": 60,
+    "top20": 26,
+    "top50": 42,
+    "top250": 49,
+    "notObserved": 11,
+    "errors": 0
+  },
+  "families": {
+    "brand": {
+      "queries": 1,
+      "measured": 1,
+      "top20": 1,
+      "top50": 1,
+      "top250": 1,
+      "notObserved": 0,
+      "errors": 0
+    },
+    "sanctions": {
+      "queries": 6,
+      "measured": 6,
+      "top20": 3,
+      "top50": 6,
+      "top250": 6,
+      "notObserved": 0,
+      "errors": 0
+    },
+    "ofac": {
+      "queries": 6,
+      "measured": 6,
+      "top20": 4,
+      "top50": 5,
+      "top250": 5,
+      "notObserved": 1,
+      "errors": 0
+    },
+    "watchlists": {
+      "queries": 4,
+      "measured": 4,
+      "top20": 2,
+      "top50": 2,
+      "top250": 4,
+      "notObserved": 0,
+      "errors": 0
+    },
+    "trade": {
+      "queries": 6,
+      "measured": 6,
+      "top20": 4,
+      "top50": 4,
+      "top250": 4,
+      "notObserved": 2,
+      "errors": 0
+    },
+    "lists": {
+      "queries": 13,
+      "measured": 13,
+      "top20": 1,
+      "top50": 7,
+      "top250": 9,
+      "notObserved": 4,
+      "errors": 0
+    },
+    "diligence": {
+      "queries": 7,
+      "measured": 7,
+      "top20": 0,
+      "top50": 3,
+      "top250": 4,
+      "notObserved": 3,
+      "errors": 0
+    },
+    "entities": {
+      "queries": 6,
+      "measured": 6,
+      "top20": 5,
+      "top50": 6,
+      "top250": 6,
+      "notObserved": 0,
+      "errors": 0
+    },
+    "workflows": {
+      "queries": 6,
+      "measured": 6,
+      "top20": 2,
+      "top50": 4,
+      "top250": 6,
+      "notObserved": 0,
+      "errors": 0
+    },
+    "runtime": {
+      "queries": 5,
+      "measured": 5,
+      "top20": 4,
+      "top50": 4,
+      "top250": 4,
+      "notObserved": 1,
+      "errors": 0
+    }
+  },
+  "results": [
+    {
+      "family": "brand",
+      "query": "sanctionskit",
+      "observedAt": "2026-10-24T01:58:41.734Z",
+      "total": 2,
+      "inspected": 2,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:41.715Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanctions",
+      "observedAt": "2026-10-24T01:58:43.754Z",
+      "total": 447,
+      "inspected": 250,
+      "rank": 22,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:43.712Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanction",
+      "observedAt": "2026-10-24T01:58:45.702Z",
+      "total": 56,
+      "inspected": 56,
+      "rank": 47,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:45.680Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanctions screening",
+      "observedAt": "2026-10-24T01:58:47.776Z",
+      "total": 961,
+      "inspected": 250,
+      "rank": 5,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:47.728Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanction screening",
+      "observedAt": "2026-10-24T01:58:49.796Z",
+      "total": 718,
+      "inspected": 250,
+      "rank": 6,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:49.756Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanctions api",
+      "observedAt": "2026-10-24T01:58:51.918Z",
+      "total": 749567,
+      "inspected": 250,
+      "rank": 8,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:51.877Z"
+    },
+    {
+      "family": "sanctions",
+      "query": "sanctions check",
+      "observedAt": "2026-10-24T01:58:53.758Z",
+      "total": 327839,
+      "inspected": 250,
+      "rank": 35,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:53.717Z"
+    },
+    {
+      "family": "ofac",
+      "query": "ofac",
+      "observedAt": "2026-10-24T01:58:55.723Z",
+      "total": 201,
+      "inspected": 201,
+      "rank": 8,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:55.689Z"
+    },
+    {
+      "family": "ofac",
+      "query": "ofac screening",
+      "observedAt": "2026-10-24T01:58:57.756Z",
+      "total": 779,
+      "inspected": 250,
+      "rank": 2,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:57.717Z"
+    },
+    {
+      "family": "ofac",
+      "query": "ofac api",
+      "observedAt": "2026-10-24T01:58:59.776Z",
+      "total": 749434,
+      "inspected": 250,
+      "rank": 4,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:58:59.738Z"
+    },
+    {
+      "family": "ofac",
+      "query": "ofac sdn",
+      "observedAt": "2026-10-24T01:59:01.744Z",
+      "total": 270,
+      "inspected": 250,
+      "rank": 13,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:01.711Z"
+    },
+    {
+      "family": "ofac",
+      "query": "sdn",
+      "observedAt": "2026-10-24T01:59:03.813Z",
+      "total": 141,
+      "inspected": 141,
+      "rank": 42,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:03.769Z"
+    },
+    {
+      "family": "ofac",
+      "query": "specially designated nationals",
+      "observedAt": "2026-10-24T01:59:05.774Z",
+      "total": 2719,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:05.729Z"
+    },
+    {
+      "family": "watchlists",
+      "query": "watchlist",
+      "observedAt": "2026-10-24T01:59:07.754Z",
+      "total": 371,
+      "inspected": 250,
+      "rank": 14,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:07.711Z"
+    },
+    {
+      "family": "watchlists",
+      "query": "watchlist screening",
+      "observedAt": "2026-10-24T01:59:09.751Z",
+      "total": 1007,
+      "inspected": 250,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:09.713Z"
+    },
+    {
+      "family": "watchlists",
+      "query": "watchlist monitoring",
+      "observedAt": "2026-10-24T01:59:11.755Z",
+      "total": 20665,
+      "inspected": 250,
+      "rank": 125,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:11.719Z"
+    },
+    {
+      "family": "watchlists",
+      "query": "sanctions list",
+      "observedAt": "2026-10-24T01:59:13.757Z",
+      "total": 223372,
+      "inspected": 250,
+      "rank": 56,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:13.720Z"
+    },
+    {
+      "family": "trade",
+      "query": "restricted party screening",
+      "observedAt": "2026-10-24T01:59:15.754Z",
+      "total": 30626,
+      "inspected": 250,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:15.717Z"
+    },
+    {
+      "family": "trade",
+      "query": "restricted party",
+      "observedAt": "2026-10-24T01:59:17.748Z",
+      "total": 29972,
+      "inspected": 250,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:17.704Z"
+    },
+    {
+      "family": "trade",
+      "query": "denied party screening",
+      "observedAt": "2026-10-24T01:59:19.754Z",
+      "total": 26824,
+      "inspected": 250,
+      "rank": 18,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:19.722Z"
+    },
+    {
+      "family": "trade",
+      "query": "denied persons list",
+      "observedAt": "2026-10-24T01:59:21.763Z",
+      "total": 232258,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:21.732Z"
+    },
+    {
+      "family": "trade",
+      "query": "export control screening",
+      "observedAt": "2026-10-24T01:59:23.900Z",
+      "total": 392902,
+      "inspected": 250,
+      "rank": 2,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:23.836Z"
+    },
+    {
+      "family": "trade",
+      "query": "trade compliance",
+      "observedAt": "2026-10-24T01:59:25.780Z",
+      "total": 18287,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:25.738Z"
+    },
+    {
+      "family": "lists",
+      "query": "uk sanctions",
+      "observedAt": "2026-10-24T01:59:27.750Z",
+      "total": 3666,
+      "inspected": 250,
+      "rank": 51,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:27.713Z"
+    },
+    {
+      "family": "lists",
+      "query": "eu sanctions",
+      "observedAt": "2026-10-24T01:59:29.757Z",
+      "total": 38742,
+      "inspected": 250,
+      "rank": 24,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:29.721Z"
+    },
+    {
+      "family": "lists",
+      "query": "un sanctions",
+      "observedAt": "2026-10-24T01:59:31.766Z",
+      "total": 18994,
+      "inspected": 250,
+      "rank": 33,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:31.730Z"
+    },
+    {
+      "family": "lists",
+      "query": "bis",
+      "observedAt": "2026-10-24T01:59:33.873Z",
+      "total": 696,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:33.836Z"
+    },
+    {
+      "family": "lists",
+      "query": "bis denied persons",
+      "observedAt": "2026-10-24T01:59:35.749Z",
+      "total": 10723,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:35.715Z"
+    },
+    {
+      "family": "lists",
+      "query": "consolidated screening list",
+      "observedAt": "2026-10-24T01:59:37.768Z",
+      "total": 224397,
+      "inspected": 250,
+      "rank": 27,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:37.733Z"
+    },
+    {
+      "family": "lists",
+      "query": "us csl",
+      "observedAt": "2026-10-24T01:59:39.771Z",
+      "total": 95778,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:39.731Z"
+    },
+    {
+      "family": "lists",
+      "query": "ofsi",
+      "observedAt": "2026-10-24T01:59:41.730Z",
+      "total": 8,
+      "inspected": 8,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:41.710Z"
+    },
+    {
+      "family": "lists",
+      "query": "canada sanctions",
+      "observedAt": "2026-10-24T01:59:43.754Z",
+      "total": 1870,
+      "inspected": 250,
+      "rank": 34,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:43.714Z"
+    },
+    {
+      "family": "lists",
+      "query": "swiss sanctions",
+      "observedAt": "2026-10-24T01:59:45.763Z",
+      "total": 1615,
+      "inspected": 250,
+      "rank": 53,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:45.729Z"
+    },
+    {
+      "family": "lists",
+      "query": "seco",
+      "observedAt": "2026-10-24T01:59:47.717Z",
+      "total": 46,
+      "inspected": 46,
+      "rank": 42,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:47.695Z"
+    },
+    {
+      "family": "lists",
+      "query": "japan sanctions",
+      "observedAt": "2026-10-24T01:59:49.920Z",
+      "total": 1683,
+      "inspected": 250,
+      "rank": 29,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:49.885Z"
+    },
+    {
+      "family": "lists",
+      "query": "ofac non sdn",
+      "observedAt": "2026-10-24T01:59:51.770Z",
+      "total": 99019,
+      "inspected": 250,
+      "rank": 3,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:51.729Z"
+    },
+    {
+      "family": "diligence",
+      "query": "aml",
+      "observedAt": "2026-10-24T01:59:53.754Z",
+      "total": 454,
+      "inspected": 250,
+      "rank": 46,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:53.717Z"
+    },
+    {
+      "family": "diligence",
+      "query": "aml screening",
+      "observedAt": "2026-10-24T01:59:55.770Z",
+      "total": 977,
+      "inspected": 250,
+      "rank": 23,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:55.732Z"
+    },
+    {
+      "family": "diligence",
+      "query": "anti money laundering",
+      "observedAt": "2026-10-24T01:59:58.093Z",
+      "total": 18125,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T01:59:57.745Z"
+    },
+    {
+      "family": "diligence",
+      "query": "kyc",
+      "observedAt": "2026-10-24T01:59:59.761Z",
+      "total": 1775,
+      "inspected": 250,
+      "rank": 177,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T01:59:59.724Z"
+    },
+    {
+      "family": "diligence",
+      "query": "kyb",
+      "observedAt": "2026-10-24T02:00:02.032Z",
+      "total": 208,
+      "inspected": 208,
+      "rank": 21,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:01.932Z"
+    },
+    {
+      "family": "diligence",
+      "query": "due diligence",
+      "observedAt": "2026-10-24T02:00:03.863Z",
+      "total": 18681,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T02:00:03.785Z"
+    },
+    {
+      "family": "diligence",
+      "query": "customer due diligence",
+      "observedAt": "2026-10-24T02:00:05.802Z",
+      "total": 35069,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T02:00:05.740Z"
+    },
+    {
+      "family": "entities",
+      "query": "customer screening",
+      "observedAt": "2026-10-24T02:00:07.792Z",
+      "total": 17271,
+      "inspected": 250,
+      "rank": 12,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:07.746Z"
+    },
+    {
+      "family": "entities",
+      "query": "customer sanctions screening",
+      "observedAt": "2026-10-24T02:00:09.791Z",
+      "total": 17545,
+      "inspected": 250,
+      "rank": 3,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:09.748Z"
+    },
+    {
+      "family": "entities",
+      "query": "entity screening",
+      "observedAt": "2026-10-24T02:00:11.883Z",
+      "total": 133239,
+      "inspected": 250,
+      "rank": 9,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:11.847Z"
+    },
+    {
+      "family": "entities",
+      "query": "vendor screening",
+      "observedAt": "2026-10-24T02:00:13.776Z",
+      "total": 12383,
+      "inspected": 250,
+      "rank": 32,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:13.731Z"
+    },
+    {
+      "family": "entities",
+      "query": "supplier screening",
+      "observedAt": "2026-10-24T02:00:15.796Z",
+      "total": 1413,
+      "inspected": 250,
+      "rank": 13,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:15.752Z"
+    },
+    {
+      "family": "entities",
+      "query": "counterparty screening",
+      "observedAt": "2026-10-24T02:00:17.790Z",
+      "total": 1085,
+      "inspected": 250,
+      "rank": 7,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:17.740Z"
+    },
+    {
+      "family": "workflows",
+      "query": "batch screening",
+      "observedAt": "2026-10-24T02:00:19.785Z",
+      "total": 19670,
+      "inspected": 250,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:19.744Z"
+    },
+    {
+      "family": "workflows",
+      "query": "bulk screening",
+      "observedAt": "2026-10-24T02:00:21.838Z",
+      "total": 8625,
+      "inspected": 250,
+      "rank": 25,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:21.800Z"
+    },
+    {
+      "family": "workflows",
+      "query": "sanctions monitoring",
+      "observedAt": "2026-10-24T02:00:23.784Z",
+      "total": 20756,
+      "inspected": 250,
+      "rank": 22,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:23.744Z"
+    },
+    {
+      "family": "workflows",
+      "query": "ongoing monitoring",
+      "observedAt": "2026-10-24T02:00:25.776Z",
+      "total": 22801,
+      "inspected": 250,
+      "rank": 1,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:25.736Z"
+    },
+    {
+      "family": "workflows",
+      "query": "sanctions webhook",
+      "observedAt": "2026-10-24T02:00:27.885Z",
+      "total": 16732,
+      "inspected": 250,
+      "rank": 58,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:27.850Z"
+    },
+    {
+      "family": "workflows",
+      "query": "screening audit trail",
+      "observedAt": "2026-10-24T02:00:29.799Z",
+      "total": 26892,
+      "inspected": 250,
+      "rank": 81,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:29.758Z"
+    },
+    {
+      "family": "runtime",
+      "query": "sanctions nodejs",
+      "observedAt": "2026-10-24T02:00:31.787Z",
+      "total": 125617,
+      "inspected": 250,
+      "rank": 12,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:31.749Z"
+    },
+    {
+      "family": "runtime",
+      "query": "sanctions typescript",
+      "observedAt": "2026-10-24T02:00:33.794Z",
+      "total": 429413,
+      "inspected": 250,
+      "rank": 19,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:33.756Z"
+    },
+    {
+      "family": "runtime",
+      "query": "ofac nodejs",
+      "observedAt": "2026-10-24T02:00:35.781Z",
+      "total": 125377,
+      "inspected": 250,
+      "rank": 7,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:35.745Z"
+    },
+    {
+      "family": "runtime",
+      "query": "ofac typescript",
+      "observedAt": "2026-10-24T02:00:37.808Z",
+      "total": 429197,
+      "inspected": 250,
+      "rank": 14,
+      "indexedVersion": "0.2.3",
+      "registryTime": "2026-10-24T02:00:37.769Z"
+    },
+    {
+      "family": "runtime",
+      "query": "watchlist sdk",
+      "observedAt": "2026-10-24T02:00:39.784Z",
+      "total": 180864,
+      "inspected": 250,
+      "rank": null,
+      "indexedVersion": null,
+      "registryTime": "2026-10-24T02:00:39.748Z"
+    }
+  ],
+  "errors": []
+}

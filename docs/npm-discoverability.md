@@ -8,10 +8,38 @@ Examples: `sanctions screening` ranked 5, `watchlist` 11, `sanctions` 22, and `o
 
 The download API reported **8** downloads for October 16–22 and **869** for September 23–October 22. Exact UTC measurement timestamps and all result counts are preserved in the JSON.
 
+## Version 0.2.3 measurement
+
+The [0.2.3 snapshot](npm-search-0.2.3.json) repeated the same 60 searches on October 23, 2026 (Mountain Time). Every request succeeded, and all 49 matching results reported version 0.2.3.
+
+| Position | 0.2.1 baseline | 0.2.3 |
+| --- | ---: | ---: |
+| First 20 | 11 | 26 |
+| First 50 | 17 | 42 |
+| First 250 | 31 | 49 |
+
+Eighteen previously unobserved searches returned the package within the first 250; none of the baseline's observed searches fell outside that limit. Across the matrix, 41 positions improved, three declined, and 16 were unchanged.
+
+| Search | 0.2.1 | 0.2.3 |
+| --- | ---: | ---: |
+| ofac | 170 | 8 |
+| ofac screening | 31 | 2 |
+| ofac api | Outside 250 | 4 |
+| restricted party screening | 70 | 1 |
+| watchlist screening | 7 | 1 |
+| sanctions api | 133 | 8 |
+| sanctions nodejs | Outside 250 | 12 |
+| sanctions typescript | Outside 250 | 19 |
+| sanctions screening | 5 | 5 |
+| batch screening | 1 | 1 |
+| ongoing monitoring | 1 | 1 |
+
+The three declines were `watchlist` (11 to 14), `watchlist monitoring` (124 to 125), and `customer screening` (9 to 12). These are point-in-time positions, not guaranteed rankings or evidence of additional customers. The JSON includes every query, including the 11 still outside the first 250.
+
 ## Run another measurement
 
 ```bash
-node scripts/search-discovery.mjs /tmp/sanctionskit-search-after-0.2.2.json
+node scripts/search-discovery.mjs /tmp/sanctionskit-search-next.json
 ```
 
 The script requires Node.js 22 or newer and no dependencies. It reads npm's public search, package metadata, and download-count APIs. It never installs a package, and it refuses to overwrite an existing output file. Omit the path to print JSON.
