@@ -1,7 +1,7 @@
 {
   "name": "sanctionskit",
-  "version": "0.2.2",
-  "description": "Official Node.js and TypeScript SDK for OFAC, sanctions, watchlist and restricted-party screening in AML, KYC and KYB workflows, with batch checks, monitoring and webhooks.",
+  "version": "0.2.3",
+  "description": "Official Node.js and TypeScript SDK for OFAC and sanctions screening, watchlist screening, restricted-party screening, batch screening, ongoing monitoring, and webhooks in AML, KYC and KYB workflows.",
   "license": "MIT",
   "author": "SanctionsKit <support@sanctionskit.com>",
   "homepage": "https://www.sanctionskit.com/integrations/typescript",

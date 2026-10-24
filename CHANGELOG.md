@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Clarify screening and ongoing monitoring capabilities in the package description.
+- Keep the broader source and workflow keywords from 0.2.2.
+- No runtime changes.
+
 ## 0.2.2
 
 - Expand search metadata for supported sanctions lists, screening workflows, and SDK features.
