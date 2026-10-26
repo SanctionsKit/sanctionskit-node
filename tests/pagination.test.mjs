@@ -63,6 +63,27 @@ test('results iterator preserves summary filters and the caller parameters', asy
   }
 });
 
+test('results iteration rejects filters without summary true before requesting a page', async () => {
+  const { client, calls } = mockClient([]);
+  for (const filter of [{ q: 'Example' }, { status: 'no_match' }, { review: 'open' }, { origin: 'api' }]) {
+    for (const summary of [undefined, false, 'true', 'false']) {
+      const iterator = client.results.iterate({ ...filter, ...(summary === undefined ? {} : { summary }) });
+      assert.equal(calls.length, 0);
+      await assert.rejects(iterator.next(), { name: 'TypeError', message: 'Result filters require summary: true.' });
+    }
+  }
+  assert.equal(calls.length, 0);
+});
+
+test('results iteration preserves full results without switching summary mode', async () => {
+  for (const params of [{}, { summary: false }]) {
+    const result = { id: 'result-1', matches: [], coverage: [], status: 'no_match' };
+    const { client, calls } = mockClient([{ items: [result], nextCursor: null }]);
+    assert.deepEqual(await collect(client.results.iterate(params)), [result]);
+    assert.equal(calls[0].url.searchParams.get('summary'), params.summary === false ? 'false' : null);
+  }
+});
+
 test('breaking iteration does not prefetch another page', async () => {
   const { client, calls } = mockClient([{ items: [{ id: 'one' }, { id: 'two' }], nextCursor: 'later' }]);
   for await (const item of client.results.iterate()) {

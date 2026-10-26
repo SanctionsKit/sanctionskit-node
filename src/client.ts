@@ -106,6 +106,13 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function resultsQuery(params: ResultsListParams): ResultsListParams {
+  if (params.summary !== true && [params.q, params.status, params.review, params.origin].some((value) => value !== undefined)) {
+    throw new TypeError('Result filters require summary: true.');
+  }
+  return params;
+}
+
 async function* iteratePages<T, Params extends PageParams>(
   list: (params: Params, options: RequestOptions) => Promise<APIResponse<Page<T>>>,
   params: Params,
@@ -198,7 +205,7 @@ export class SanctionsKit {
 
   readonly results: ResultsResource = {
     list: ((params: ResultsListParams = {}, options?: RequestOptions) =>
-      this.#request<APIResponse<ResultsPage>>('GET', '/results', options, { query: params })) as ResultsResource['list'],
+      this.#request<APIResponse<ResultsPage>>('GET', '/results', options, { query: resultsQuery(params) })) as ResultsResource['list'],
     iterate: ((params: ResultsListParams = {}, options: RequestOptions = {}) =>
       iteratePages<ScreeningResult | ScreeningSummary, ResultsListParams>(this.results.list, { ...params }, { ...options })) as ResultsResource['iterate'],
     retrieve: (id, options) => this.#request('GET', `/results/${resourceId(id)}`, options),

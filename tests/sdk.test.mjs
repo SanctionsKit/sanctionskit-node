@@ -53,17 +53,48 @@ test('uses the production API with bearer authentication and rejects redirects',
   assert.equal(request.body, null);
 });
 
-test('encodes filters and preserves false, zero, and a base URL path', async () => {
+test('preserves false, zero, and a base URL path without changing result mode', async () => {
   const { client, calls } = mockClient(undefined, { baseURL: 'http://localhost:3000/custom/v1/' });
-  const filters = { limit: 0, summary: false, q: 'A & B/Example', cursor: undefined };
+  const filters = { limit: 0, summary: false, cursor: undefined };
   await client.results.list(filters);
   const url = new URL(calls[0].url);
   assert.equal(url.pathname, '/custom/v1/results');
   assert.equal(url.searchParams.get('limit'), '0');
   assert.equal(url.searchParams.get('summary'), 'false');
-  assert.equal(url.searchParams.get('q'), 'A & B/Example');
   assert.equal(url.searchParams.has('cursor'), false);
-  assert.deepEqual(filters, { limit: 0, summary: false, q: 'A & B/Example', cursor: undefined });
+  assert.deepEqual(filters, { limit: 0, summary: false, cursor: undefined });
+});
+
+test('encodes result filters only with an explicit summary mode', async () => {
+  const { client, calls } = mockClient();
+  const filters = { summary: true, q: 'A & B/Example', status: 'no_match', review: 'unreviewed', origin: 'api' };
+  await client.results.list(filters);
+  const url = new URL(calls[0].url);
+  assert.equal(url.searchParams.get('summary'), 'true');
+  assert.equal(url.searchParams.get('q'), 'A & B/Example');
+  assert.equal(url.searchParams.get('status'), 'no_match');
+  assert.equal(url.searchParams.get('review'), 'unreviewed');
+  assert.equal(url.searchParams.get('origin'), 'api');
+  assert.deepEqual(filters, { summary: true, q: 'A & B/Example', status: 'no_match', review: 'unreviewed', origin: 'api' });
+});
+
+test('rejects result filters without summary true before making a request', async () => {
+  const { client, calls } = mockClient();
+  for (const filter of [{ q: 'Example' }, { status: 'no_match' }, { review: 'open' }, { origin: 'api' }]) {
+    for (const summary of [undefined, false, 'true', 'false', null, 0]) {
+      const params = { ...filter, ...(summary === undefined ? {} : { summary }) };
+      await assert.rejects(async () => client.results.list(params), { name: 'TypeError', message: 'Result filters require summary: true.' });
+      assert.deepEqual(params, { ...filter, ...(summary === undefined ? {} : { summary }) });
+    }
+  }
+  assert.equal(calls.length, 0);
+});
+
+test('omitted and undefined result filters keep full result mode', async () => {
+  const { client, calls } = mockClient();
+  await client.results.list();
+  await client.results.list({ q: undefined, status: undefined, review: undefined, origin: undefined });
+  assert.ok(calls.every((request) => new URL(request.url).search === ''));
 });
 
 test('sends the screening body and caller idempotency key unchanged', async () => {
@@ -104,6 +135,32 @@ test('returns the evidence object without changing its envelope', async () => {
   const evidence = { format: 'sanctionskit-evidence@1', result: { id: 'result-1' }, retainedInputs: false };
   const { client } = mockClient(() => Response.json(evidence));
   assert.deepEqual(await client.results.evidence('result-1'), evidence);
+});
+
+test('preserves current matching evidence and historical omissions', async () => {
+  const assessment = {
+    name: null,
+    identifiers: { status: 'agreement', matched: 1, issuerAgreements: 0, issuerUnknown: 1, conflicts: 0 },
+    birthDate: { status: 'not_supplied' },
+    country: { status: 'unavailable' },
+    entityType: { status: 'agreement' },
+    reviewTier: 'identifier', alertBasis: 'identifier', hasConflicts: false, sameNameCandidates: 0,
+  };
+  const matching = { version: 'matching-1', profile: 'standard', nameThreshold: 90, corroboratedNameThreshold: 85, retrievalVersion: 'retrieval-1' };
+  const current = {
+    id: 'result-current', matches: [{ assessment }], matching,
+    warnings: [{ code: 'limited_name_information', message: 'Only one name part was supplied.' }],
+    policySnapshot: { matching: { profile: 'standard', partialNames: 'exclude' } },
+  };
+  const historical = { id: 'result-historical', matches: [{}], policySnapshot: {} };
+  for (const result of [current, historical]) {
+    const { client } = mockClient(() => Response.json({ data: result }));
+    assert.deepEqual((await client.results.retrieve(result.id)).data, result);
+    assert.deepEqual((await client.screenings.create(screening, { idempotencyKey: 'matching-example-1' })).data, result);
+    const evidence = { format: 'sanctionskit-evidence@1', result };
+    const { client: evidenceClient } = mockClient(() => Response.json(evidence));
+    assert.deepEqual(await evidenceClient.results.evidence(result.id), evidence);
+  }
 });
 
 test('encodes resource IDs as a single path segment', async () => {

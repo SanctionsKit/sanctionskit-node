@@ -6,5 +6,6 @@ coverage/
 .env.*
 !.env.example
 .npmrc
+.sandbox-report.json
 .DS_Store
 *.log

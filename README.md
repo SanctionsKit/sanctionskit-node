@@ -14,6 +14,8 @@ Requires Node.js 22 or later. Includes TypeScript types, ESM and CommonJS export
 
 See the [changelog](https://github.com/SanctionsKit/sanctionskit-node/blob/main/CHANGELOG.md) for release history. It is also included in the installed package.
 
+Version 1.x provides a stable public API. See the [compatibility and upgrade guide](https://github.com/SanctionsKit/sanctionskit-node/blob/main/COMPATIBILITY.md) for supported runtimes, TypeScript 5.9.3+, and the migration from 0.2.x.
+
 ## Your first screening
 
 The synthetic sandbox is free and needs no card. Production screening requires a [paid plan](https://www.sanctionskit.com/pricing).
@@ -57,6 +59,8 @@ node screen.mjs
 Alex Morgan is an invented subject. `sandbox@1` uses synthetic records and does not search live sanctions lists. Follow the [quickstart](https://www.sanctionskit.com/docs/quickstart) for the full walkthrough.
 
 `potential_match` means the candidates need review. `no_match` applies to the supplied information and selected coverage; it is not a clearance decision. Inspect `data.matches`, `data.coverage`, and `data.versions` before taking the next step. An error is an incomplete request, never a no-match result. See [screening results](https://www.sanctionskit.com/docs/screenings).
+
+New results also include applied matching settings in `data.matching` and structured comparisons in each match's `assessment`. Preserve any `data.warnings`, including limitations on the supplied name. These fields are optional for historical results, and an assessment's name comparison can be `null`. Approved policies expose their matching settings through `policy.matching`.
 
 For CommonJS:
 
@@ -142,6 +146,8 @@ The SDK preserves the API response shape. Most methods return `{ data }`; `resul
 This release covers these 21 operations. The [API reference](https://www.sanctionskit.com/docs/api-reference) also documents webhook endpoint management, uploads, counterparties, and review workflows, which you can call with `fetch`.
 
 List methods return one page per call. Use `data.nextCursor` for results, policies, and batch lists. Batch row pages use `data.nextOffset` with `batches.retrieve(id, { offset })`. Continue until the continuation value is `null`, even if a page is short. `sources.list()` returns its source array in `data`.
+
+Result filters `q`, `status`, `review`, and `origin` require `summary: true`. For example, use `results.list({ summary: true, status: 'potential_match' })`, then `results.retrieve(row.id)` for full evidence. This also applies to `results.iterate()`. Invalid combinations throw `TypeError` before sending a request. Without summary mode, only `limit` and `cursor` filter the returned page.
 
 ## Automatic pagination
 
@@ -231,7 +237,7 @@ try {
 
 API errors expose `status`, `code`, `message`, `requestId`, `retryAfter`, and optional `details`. `retryAfter` is the raw `Retry-After` header. Network failures and cancellations reject the request too.
 
-The SDK makes one attempt per call. It does not retry automatically. Generate an idempotency key once for each new screening or batch and save it with the request. After a timeout, retry with **the same key and body**. A changed body needs a new key. In the quickstart, rerun the script without generating another `REQUEST_KEY`.
+The SDK makes one attempt per HTTP request. It does not retry automatically. Generate an idempotency key once for each new screening or batch and save it with the request. After a timeout, retry with **the same key and body**. A changed body needs a new key. In the quickstart, rerun the script without generating another `REQUEST_KEY`.
 
 Read [idempotency](https://www.sanctionskit.com/docs/idempotency) and [errors and rate limits](https://www.sanctionskit.com/docs/errors) before adding retries. `rate_limited` and `usage_cap_reached` both use HTTP 429, but waiting alone does not fix an exhausted allowance.
 
@@ -282,6 +288,8 @@ npm run check
 ```
 
 Tests use local fixtures and do not require API keys. See [CONTRIBUTING.md](https://github.com/SanctionsKit/sanctionskit-node/blob/main/CONTRIBUTING.md) for development and release steps.
+
+Release checks also compare the SDK with a versioned API contract, install the packed artifact in a clean consumer, and run a separate synthetic sandbox acceptance check.
 
 ## License
 

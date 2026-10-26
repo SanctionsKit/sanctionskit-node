@@ -1,6 +1,6 @@
 {
   "name": "sanctionskit",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "Official Node.js and TypeScript SDK for OFAC and sanctions screening, watchlist screening, restricted-party screening, batch screening, ongoing monitoring, and webhooks in AML, KYC and KYB workflows.",
   "license": "MIT",
   "author": "SanctionsKit <support@sanctionskit.com>",
@@ -97,6 +97,7 @@
     "dist",
     "README.md",
     "CHANGELOG.md",
+    "COMPATIBILITY.md",
     "LICENSE"
   ],
   "sideEffects": false,
@@ -111,6 +112,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "npm run build && node --test tests/*.test.mjs && npm run test:types",
     "test:types": "tsc -p tests/tsconfig.json",
+    "test:package": "node scripts/test-package.mjs",
+    "test:sandbox": "npm run build && node scripts/test-sandbox.mjs",
+    "contract:check": "node scripts/contract-check.mjs",
+    "contract:check:online": "node scripts/contract-check.mjs --online",
     "check": "npm run typecheck && npm test",
     "prepack": "npm run build",
     "search:check": "node scripts/search-discovery.mjs"

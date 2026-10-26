@@ -5,6 +5,19 @@ import SanctionsKit, {
   type ScreeningRequest,
   type ScreeningResult,
   type ScreeningSummary,
+  type AppliedMatchingPolicy,
+  type IdentityComparisonStatus,
+  type MatchAssessment,
+  type MatchingProfile,
+  type NameAssessment,
+  type PartialNamePolicy,
+  type PolicyMatchingSettings,
+  type ResultsFullParams,
+  type ResultsListParams,
+  type ResultsSummaryParams,
+  type ScreeningMatch,
+  type ScreeningPolicySnapshot,
+  type ScreeningWarning,
   verifyWebhook,
   type BatchWaitOptions,
   type MonitorRequest,
@@ -34,6 +47,12 @@ async function checkResources() {
   const version: number | undefined = policy.data.items[0]?.version;
   const created = await client.screenings.create(screening, { ...options, idempotencyKey: 'screening-example-1' });
   const result: ScreeningResult = created.data;
+  const assessment: MatchAssessment | undefined = result.matches[0]?.assessment;
+  const assessedName: NameAssessment | null | undefined = assessment?.name;
+  const comparison: IdentityComparisonStatus | undefined = assessment?.birthDate.status;
+  const matching: AppliedMatchingPolicy | undefined = result.matching;
+  const warning: ScreeningWarning | undefined = result.warnings?.[0];
+  const policyMatching: PolicyMatchingSettings | undefined = result.policySnapshot?.matching;
   const retained = await client.results.retrieve(result.id, options);
   const name: string | undefined = retained.data.subject?.name;
   const evidence = await client.results.evidence(result.id, options);
@@ -44,6 +63,9 @@ async function checkResources() {
   const item: ScreeningResult | undefined = results.data.items[0];
   const summaryItem: ScreeningSummary | undefined = summary.data.items[0];
   const plainItem: ScreeningResult | undefined = plain.data.items[0];
+  const dynamicParams: ResultsListParams = { summary: Math.random() > 0.5, limit: 10 };
+  const dynamicResults = await client.results.list(dynamicParams);
+  const dynamicItem: ScreeningResult | ScreeningSummary | undefined = dynamicResults.data.items[0];
   const createdBatch = await client.batches.create(batch, { ...options, idempotencyKey: 'batch-example-1' });
   const batches = await client.batches.list({ cursor: 'cursor-1' }, options);
   const retrievedBatch = await client.batches.retrieve(createdBatch.data.id, { offset: 0, limit: 10 }, options);
@@ -51,8 +73,57 @@ async function checkResources() {
   const cancelled = await client.batches.cancel(createdBatch.data.id, options);
   const usage = await client.usage.retrieve(options);
   const remaining: number = usage.data.remaining;
-  return { sourceId, required, version, name, format, item, summaryItem, plainItem, batches, nextOffset, cancelled, remaining };
+  return { sourceId, required, version, name, format, item, summaryItem, plainItem, dynamicItem, batches, nextOffset, cancelled, remaining, assessment, assessedName, comparison, matching, warning, policyMatching };
 }
+
+const profile: MatchingProfile = 'focused';
+const partialNames: PartialNamePolicy = 'review';
+const policyMatching: PolicyMatchingSettings = { profile, partialNames };
+const appliedMatching: AppliedMatchingPolicy = {
+  version: 'matching-1', profile: 'standard', nameThreshold: 90,
+  corroboratedNameThreshold: 85, retrievalVersion: 'retrieval-1',
+};
+const assessment: MatchAssessment = {
+  name: null,
+  identifiers: { status: 'agreement', matched: 1, issuerAgreements: 0, issuerUnknown: 1, conflicts: 0 },
+  birthDate: { status: 'not_supplied' },
+  country: { status: 'unavailable' },
+  entityType: { status: 'agreement' },
+  reviewTier: 'identifier', alertBasis: 'identifier', hasConflicts: false, sameNameCandidates: 0,
+};
+const summaryParams: ResultsSummaryParams = { summary: true, q: 'Example', status: 'no_match', review: 'open', origin: 'api' };
+const fullParams: ResultsFullParams = { summary: false, limit: 10 };
+declare const historicalMatch: Omit<ScreeningMatch, 'assessment'>;
+declare const historicalResult: Omit<ScreeningResult, 'matching' | 'warnings'>;
+declare const historicalPolicy: Omit<ScreeningPolicySnapshot, 'matching'>;
+const oldMatch: ScreeningMatch = historicalMatch;
+const oldResult: ScreeningResult = historicalResult;
+const oldPolicy: ScreeningPolicySnapshot = historicalPolicy;
+
+// @ts-expect-error Assessment may be omitted, but is not null.
+const nullAssessment: ScreeningMatch = { ...historicalMatch, assessment: null };
+// @ts-expect-error The assessed name is required, even when null.
+const omittedName: MatchAssessment['name'] = undefined;
+// @ts-expect-error Matching evidence may be omitted, but is not null.
+const nullMatching: ScreeningResult = { ...historicalResult, matching: null };
+// @ts-expect-error Warnings may be omitted, but are not null.
+const nullWarnings: ScreeningResult = { ...historicalResult, warnings: null };
+// @ts-expect-error Policy matching may be omitted, but is not null.
+const nullPolicyMatching: ScreeningPolicySnapshot = { ...historicalPolicy, matching: null };
+
+void policyMatching;
+void appliedMatching;
+void assessment;
+void summaryParams;
+void fullParams;
+void oldMatch;
+void oldResult;
+void oldPolicy;
+void nullAssessment;
+void omittedName;
+void nullMatching;
+void nullWarnings;
+void nullPolicyMatching;
 
 function checkErrors(error: unknown) {
   if (error instanceof SanctionsKitError) {
@@ -78,7 +149,41 @@ client.screenings.create(screening);
 // @ts-expect-error An idempotency key is required.
 client.batches.create(batch, options);
 // @ts-expect-error Only documented statuses are accepted.
-client.results.list({ status: 'approved' });
+client.results.list({ summary: true, status: 'approved' });
+// @ts-expect-error Search requires summary mode.
+client.results.list({ q: 'Example' });
+// @ts-expect-error Status filtering requires summary mode.
+client.results.list({ status: 'no_match' });
+// @ts-expect-error Review filtering requires summary mode.
+client.results.list({ review: 'open' });
+// @ts-expect-error Origin filtering requires summary mode.
+client.results.list({ origin: 'api' });
+// @ts-expect-error Search is unavailable for full results.
+client.results.list({ summary: false, q: 'Example' });
+// @ts-expect-error Status filtering is unavailable for full results.
+client.results.list({ summary: false, status: 'no_match' });
+// @ts-expect-error Review filtering is unavailable for full results.
+client.results.list({ summary: false, review: 'open' });
+// @ts-expect-error Origin filtering is unavailable for full results.
+client.results.list({ summary: false, origin: 'api' });
+// @ts-expect-error Search requires summary mode.
+client.results.iterate({ q: 'Example' });
+// @ts-expect-error Status filtering requires summary mode.
+client.results.iterate({ status: 'no_match' });
+// @ts-expect-error Review filtering requires summary mode.
+client.results.iterate({ review: 'open' });
+// @ts-expect-error Origin filtering requires summary mode.
+client.results.iterate({ origin: 'api' });
+// @ts-expect-error Search is unavailable for full results.
+client.results.iterate({ summary: false, q: 'Example' });
+// @ts-expect-error Status filtering is unavailable for full results.
+client.results.iterate({ summary: false, status: 'no_match' });
+// @ts-expect-error Review filtering is unavailable for full results.
+client.results.iterate({ summary: false, review: 'open' });
+// @ts-expect-error Origin filtering is unavailable for full results.
+client.results.iterate({ summary: false, origin: 'api' });
+// @ts-expect-error A dynamic mode cannot guarantee filters are applied.
+client.results.list({ summary: Math.random() > 0.5, q: 'Example' });
 
 void checkResources;
 void checkErrors;
@@ -88,13 +193,21 @@ void bothBatchInputs;
 void minimalBatch;
 
 async function checkNewResources() {
-  for await (const result of client.results.iterate({ summary: true }, options)) {
+  for await (const result of client.results.iterate(summaryParams, options)) {
     const summary: ScreeningSummary = result;
     void summary;
   }
   for await (const result of client.results.iterate({}, options)) {
     const full: ScreeningResult = result;
     void full;
+  }
+  for await (const result of client.results.iterate(fullParams, options)) {
+    const full: ScreeningResult = result;
+    void full;
+  }
+  for await (const result of client.results.iterate({ summary: Math.random() > 0.5 }, options)) {
+    const dynamic: ScreeningResult | ScreeningSummary = result;
+    void dynamic;
   }
   for await (const policy of client.policies.iterate()) void policy.version;
   for await (const batch of client.batches.iterate()) void batch.completed;

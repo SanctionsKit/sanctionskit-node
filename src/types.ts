@@ -2,6 +2,20 @@ export type Environment = 'sandbox' | 'production';
 export type EntityType = 'person' | 'organization' | 'vessel' | 'aircraft' | 'other';
 export type ScreeningStatus = 'potential_match' | 'no_match';
 export type Retention = 'standard' | 'minimal';
+export type MatchingProfile = 'standard' | 'focused';
+export type PartialNamePolicy = 'review' | 'exclude';
+
+export interface PolicyMatchingSettings {
+  profile: MatchingProfile;
+  partialNames?: PartialNamePolicy;
+}
+
+export interface AppliedMatchingPolicy extends PolicyMatchingSettings {
+  version: string;
+  nameThreshold: number;
+  corroboratedNameThreshold: number;
+  retrievalVersion: string;
+}
 
 export interface APIResponse<T> {
   data: T;
@@ -120,6 +134,7 @@ export interface ScreeningPolicySnapshot {
   };
   monitoringIntervalHours: 6 | 24 | 168;
   retentionTrigger: 'review_completed' | 'relationship_ended' | 'business_event';
+  matching?: PolicyMatchingSettings;
 }
 
 export interface PolicyList extends Page<ScreeningPolicySnapshot> {
@@ -194,11 +209,44 @@ export interface MatchEvidence {
   explanation: string;
 }
 
+export type IdentityComparisonStatus = 'agreement' | 'conflict' | 'not_supplied' | 'unavailable' | 'not_comparable';
+
+export interface NameAssessment {
+  similarity: number;
+  method: string;
+  aliasKind: 'primary' | 'alias';
+  aliasQuality: 'strong' | 'weak' | 'unknown';
+}
+
+export interface MatchAssessment {
+  name: NameAssessment | null;
+  identifiers: {
+    status: IdentityComparisonStatus;
+    matched: number;
+    issuerAgreements: number;
+    issuerUnknown: number;
+    conflicts: number;
+  };
+  birthDate: { status: IdentityComparisonStatus; precision?: 'year' | 'month' | 'day' };
+  country: { status: IdentityComparisonStatus };
+  entityType: { status: IdentityComparisonStatus };
+  reviewTier: 'identifier' | 'corroborated' | 'conflicting' | 'name_only';
+  alertBasis: 'identifier' | 'name' | 'name_and_birth_date' | 'partial_name';
+  hasConflicts: boolean;
+  sameNameCandidates: number;
+}
+
+export interface ScreeningWarning {
+  code: 'limited_name_information';
+  message: string;
+}
+
 export interface ScreeningMatch {
   record: SourceRecord;
   score: number;
   evidence: MatchEvidence[];
   conflicts: string[];
+  assessment?: MatchAssessment;
 }
 
 export interface ScreeningResult {
@@ -216,6 +264,8 @@ export interface ScreeningResult {
   };
   disclaimer: string;
   policySnapshot?: ScreeningPolicySnapshot;
+  matching?: AppliedMatchingPolicy;
+  warnings?: ScreeningWarning[];
 }
 
 export interface RetainedScreeningResult extends ScreeningResult {
@@ -252,13 +302,23 @@ export interface ScreeningSummary {
   monitorId: string | null;
 }
 
-export interface ResultsListParams extends PageParams {
-  summary?: boolean;
+export interface ResultsFullParams extends PageParams {
+  summary?: false;
+  q?: never;
+  status?: never;
+  review?: never;
+  origin?: never;
+}
+
+export interface ResultsSummaryParams extends PageParams {
+  summary: true;
   q?: string;
   status?: ScreeningStatus;
   review?: 'open' | 'confirmed' | 'dismissed' | 'unreviewed';
   origin?: 'manual' | 'api' | 'batch' | 'monitor' | 'unknown';
 }
+
+export type ResultsListParams = ResultsFullParams | ResultsSummaryParams;
 
 export type ResultsPage = Page<ScreeningResult> | Page<ScreeningSummary>;
 

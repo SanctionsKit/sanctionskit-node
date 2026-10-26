@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0
+
+- Establish the stable public API and document runtime, TypeScript, deprecation, and maintenance support.
+- Require `summary: true` for result search and status, review, and origin filters. Invalid combinations now fail before a request; previous versions allowed the server to ignore them.
+- Add optional matching settings, match assessments, policy matching settings, and input warnings to response types.
+- Check supported API operations and types against a versioned contract, with a separate live contract check.
+- Verify packed ESM, CommonJS, and TypeScript consumers before publication on Node 22 and 24.
+- Add a separate sandbox acceptance check for screening, idempotency, evidence, pagination, batches, and monitoring.
+
+See [upgrading from 0.2.x](https://github.com/SanctionsKit/sanctionskit-node/blob/main/COMPATIBILITY.md#upgrading-from-02x) before updating filtered result calls.
+
 ## 0.2.3
 
 - Clarify screening and ongoing monitoring capabilities in the package description.
